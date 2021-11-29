@@ -29,14 +29,8 @@ class _TabsState extends State<Tabs> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Study with me | Demo"),
+        title: const Text("Study with me"),
         centerTitle: true,
-        leading: IconButton(
-          onPressed: () {
-            debugPrint('menu');
-          },
-          icon: const Icon(Icons.menu),
-        ),
       ),
       body: _pageList[_currentIndex],
       // 底部导航栏，根据选择的项动态改变dody里的内容，从而实现跳转页面
@@ -52,8 +46,8 @@ class _TabsState extends State<Tabs> {
         selectedItemColor: Colors.blue, // 选中某一项的颜色，或者用fixedColor
         backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "主页"),
-          BottomNavigationBarItem(icon: Icon(Icons.forum), label: "论坛"),
+          BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: "主页"),
+          BottomNavigationBarItem(icon: Icon(Icons.forum_rounded), label: "论坛"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "我的"),
         ],
       ),

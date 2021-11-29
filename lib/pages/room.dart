@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_demo/pages/tabs.dart';
+import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/status.dart' as status;
 
 class Room extends StatefulWidget {
   final int roomId;
@@ -11,58 +15,96 @@ class Room extends StatefulWidget {
 }
 
 class _RoomState extends State<Room> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("自习室 " + widget.roomId.toString()), // 通过widget获取状态组件的成员变量
-        centerTitle: true,
-      ),
-      body: BodyContent(),
-    );
-  }
-}
-
-// ignore: must_be_immutable
-class BodyContent extends StatefulWidget {
   int roomPeopleCnt = 0;
-  BodyContent({Key? key}) : super(key: key);
-
+  var channel = IOWebSocketChannel.connect(
+      "ws://njtg5y.natappfree.cc/study_with_me/room_web_socket");
   @override
-  _BodyContentState createState() => _BodyContentState();
-}
+  void initState() {
+    super.initState();
+    Map info = {
+      "action": "enter",
+      "roomId": widget.roomId,
+    };
+    channel.sink.add(json.encode(info));
+    channel.stream.listen((event) {
+      setState(() {
+        roomPeopleCnt = int.parse(event);
+      });
+    });
+  }
 
-class _BodyContentState extends State<BodyContent> {
+  Future<bool> _leaveRoom() {
+    Map info = {
+      "action": "leave",
+      "roomId": widget.roomId,
+    };
+    channel.sink.add(json.encode(info));
+    channel.sink.close();
+    Navigator.of(context).pop();
+    return Future.value(true);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "目前人数：${widget.roomPeopleCnt}",
-            style: const TextStyle(
-              fontSize: 18,
-            ),
-          ),
-          ElevatedButton(
+    return WillPopScope(
+      onWillPop: _leaveRoom,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("自习室 " + widget.roomId.toString()), // 通过widget获取状态组件的成员变量
+          centerTitle: true,
+          automaticallyImplyLeading: false, // 隐藏自带的返回按钮
+          leading: IconButton(
             onPressed: () {
-              setState(() {
-                widget.roomPeopleCnt++;
-              });
+              Map info = {
+                "action": "leave",
+                "roomId": widget.roomId,
+              };
+              channel.sink.add(json.encode(info));
+              channel.sink.close();
+              Navigator.of(context).pop();
+              // Navigator.of(context).pushAndRemoveUntil(
+              //     MaterialPageRoute(builder: (context) => const Tabs()),
+              //     (route) => false);
             },
-            child: const Text("更新人数"),
+            icon: const Icon(Icons.arrow_back_ios_new_rounded),
           ),
-          ElevatedButton(
-            onPressed: () {
-              // Navigator.of(context).pop();
-              Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => const Tabs()),
-                  (route) => false);
-            },
-            child: const Text("退出自习室"),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.person_outline_sharp,
+                  ),
+                  Text(
+                    "$roomPeopleCnt",
+                    style: const TextStyle(
+                      fontSize: 18,
+                    ),
+                  ),
+                ],
+              ),
+              // ElevatedButton(
+              //   onPressed: () {
+              //     Map info = {
+              //       "action": "leave",
+              //       "roomId": widget.roomId,
+              //     };
+              //     channel.sink.add(json.encode(info));
+              //     channel.sink.close();
+              //     // Navigator.of(context).pop();
+              //     Navigator.of(context).pushAndRemoveUntil(
+              //         MaterialPageRoute(builder: (context) => const Tabs()),
+              //         (route) => false);
+              //   },
+              //   child: const Text("退出自习室"),
+              // ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

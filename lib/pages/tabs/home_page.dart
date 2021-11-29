@@ -11,10 +11,10 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
+// 因为切换到其他底栏并不会关闭WebSocket，重新点击主页又会重复添加，所以改为刷新一次进行一次WebSocket连接
 class _HomePageState extends State<HomePage> {
   Map _allRoomPeopleCnt = {};
-  var channel = IOWebSocketChannel.connect(
-      "ws://njtg5y.natappfree.cc/study_with_me/index_web_socket");
+
   // 初始化时调用该方法
   @override
   void initState() {
@@ -25,14 +25,51 @@ class _HomePageState extends State<HomePage> {
       "room3": 0,
       "room4": 0,
     };
-    // _getAllRoomPeopleCnt();
+    _getAllRoomPeopleCnt();
+  }
 
-    channel.sink.add("enter index page");
+  @override
+  Widget build(BuildContext context) {
+    // 还不知道怎么应用到Column的children中
+    // List list = [];
+    // for (int i = 1; i <= 4; ++i) {
+    //   list.add(RoomItem(i, _allRoomPeopleCnt["room$i"]));
+    // }
+    return RefreshIndicator(
+      onRefresh: _getAllRoomPeopleCnt,
+      // 一个列表
+      // 不知道为啥必须要放在ListView里才有刷新的样式
+      child: ListView(
+        children: [
+          // RoomCard(1, _allRoomPeopleCnt["room1"]),
+          // RoomCard(2, _allRoomPeopleCnt["room2"]),
+          // RoomCard(3, _allRoomPeopleCnt["room3"]),
+          // RoomCard(4, _allRoomPeopleCnt["room4"]),
+          // 旧样式
+          Column(
+            children: [
+              RoomItem(1, _allRoomPeopleCnt["room1"]),
+              RoomItem(2, _allRoomPeopleCnt["room2"]),
+              RoomItem(3, _allRoomPeopleCnt["room3"]),
+              RoomItem(4, _allRoomPeopleCnt["room4"]),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _getAllRoomPeopleCnt() async {
+    // 刚点主页就获取人数，然后关闭，然后每次刷新执行一次
+    var channel = IOWebSocketChannel.connect(
+        "ws://njtg5y.natappfree.cc/study_with_me/index_web_socket");
+    // channel.sink.add("enter index page");
     List list = [];
     channel.stream.listen((event) {
       debugPrint("event: ${event.toString()}");
       list = event.toString().split(" ");
       debugPrint("list: ${list.toString()}");
+
       Map map = {
         "room1": int.parse(list[1]),
         "room2": int.parse(list[2]),
@@ -43,56 +80,8 @@ class _HomePageState extends State<HomePage> {
         _allRoomPeopleCnt = map;
       });
     });
+    channel.sink.close();
     // 如何在离开主页时向服务器发出leave index page消息？
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-          // image: DecorationImage(
-          //   image: AssetImage("assets/images/bg.jpg"),
-          //   fit: BoxFit.cover,
-          // ),
-          ),
-      child: RefreshIndicator(
-        onRefresh: _getAllRoomPeopleCnt,
-        // 一个列表
-        // 不知道为啥必须要放在ListView里才有刷新的样式
-        child: ListView(
-          children: [
-            RoomCard(1, _allRoomPeopleCnt["room1"]),
-            RoomCard(2, _allRoomPeopleCnt["room2"]),
-            RoomCard(3, _allRoomPeopleCnt["room3"]),
-            RoomCard(4, _allRoomPeopleCnt["room4"]),
-            // 旧样式
-            // Column(
-            //   children: [
-            //     RoomItem(4, _allRoomPeopleCnt["room4"]),
-            //   ],
-            // ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Future<void> _getAllRoomPeopleCnt() async {
-    // var url = Uri.parse("http://jd.itying.com/api/httpget");
-    // var response = await http.get(url);
-    // Map map = {
-    //   "room1": 7,
-    //   "room2": 2,
-    //   "room3": 5,
-    //   "room4": 1,
-    // };
-    channel.sink.add("enter index page");
-    // Map map = {}
-    // channel.sink.close();
-
-    // setState(() {
-    //   _allRoomPeopleCnt = map;
-    // });
   }
 }
 
@@ -104,7 +93,7 @@ class RoomCard extends StatefulWidget {
     "assets/images/bg1.png",
     "assets/images/bg2.png",
     "assets/images/bg3.png",
-    "assets/images/bg4.png",
+    "assets/images/bg7.png",
     "assets/images/bg5.png",
     "assets/images/bg5.png",
     "assets/images/bg5.png",
