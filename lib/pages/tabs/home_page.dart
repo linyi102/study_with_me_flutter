@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_demo/main.dart';
 import 'package:flutter_application_demo/pages/room.dart';
 import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/status.dart' as status;
+
+import '../tabs.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -12,6 +15,7 @@ class HomePage extends StatefulWidget {
 }
 
 // 因为切换到其他底栏并不会关闭WebSocket，重新点击主页又会重复添加，所以改为刷新一次进行一次WebSocket连接
+// 修改：作为全局变量放在tabs.dart，每次点击其他底部导航就会关闭WebSocket，点击首页就会开启websoc
 class _HomePageState extends State<HomePage> {
   Map _allRoomPeopleCnt = {};
 
@@ -19,12 +23,9 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _allRoomPeopleCnt = {
-      "room1": 0,
-      "room2": 0,
-      "room3": 0,
-      "room4": 0,
-    };
+    for (int i = 1; i < 5; ++i) {
+      _allRoomPeopleCnt["room$i"] = 0;
+    }
     _getAllRoomPeopleCnt();
   }
 
@@ -41,19 +42,22 @@ class _HomePageState extends State<HomePage> {
       // 不知道为啥必须要放在ListView里才有刷新的样式
       child: ListView(
         children: [
-          // RoomCard(1, _allRoomPeopleCnt["room1"]),
-          // RoomCard(2, _allRoomPeopleCnt["room2"]),
-          // RoomCard(3, _allRoomPeopleCnt["room3"]),
-          // RoomCard(4, _allRoomPeopleCnt["room4"]),
+          RoomCard(1, _allRoomPeopleCnt["room1"]),
+          RoomCard(2, _allRoomPeopleCnt["room2"]),
+          RoomCard(3, _allRoomPeopleCnt["room3"]),
+          RoomCard(4, _allRoomPeopleCnt["room4"]),
           // 旧样式
-          Column(
-            children: [
-              RoomItem(1, _allRoomPeopleCnt["room1"]),
-              RoomItem(2, _allRoomPeopleCnt["room2"]),
-              RoomItem(3, _allRoomPeopleCnt["room3"]),
-              RoomItem(4, _allRoomPeopleCnt["room4"]),
-            ],
-          ),
+          // Column(
+          //   children: [
+          //     SizedBox(
+          //       height: MediaQuery.of(context).size.height / 3,
+          //     ),
+          //     RoomItem(1, _allRoomPeopleCnt["room1"]),
+          //     RoomItem(2, _allRoomPeopleCnt["room2"]),
+          //     RoomItem(3, _allRoomPeopleCnt["room3"]),
+          //     RoomItem(4, _allRoomPeopleCnt["room4"]),
+          //   ],
+          // ),
         ],
       ),
     );
@@ -61,12 +65,10 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _getAllRoomPeopleCnt() async {
     // 刚点主页就获取人数，然后关闭，然后每次刷新执行一次
-    var channel = IOWebSocketChannel.connect(
-        "ws://njtg5y.natappfree.cc/study_with_me/index_web_socket");
+    channel = IOWebSocketChannel.connect(indexWebSocketUrl);
     // channel.sink.add("enter index page");
     List list = [];
     channel.stream.listen((event) {
-      debugPrint("event: ${event.toString()}");
       list = event.toString().split(" ");
       debugPrint("list: ${list.toString()}");
 
@@ -80,8 +82,8 @@ class _HomePageState extends State<HomePage> {
         _allRoomPeopleCnt = map;
       });
     });
-    channel.sink.close();
-    // 如何在离开主页时向服务器发出leave index page消息？
+    // debugPrint("关闭WebSocket");
+    // channel.sink.close();
   }
 }
 
@@ -118,69 +120,81 @@ class RoomCard extends StatefulWidget {
 class _RoomCardState extends State<RoomCard> {
   @override
   Widget build(BuildContext context) {
-    return Card(
-      // margin: const EdgeInsets.all(20),
-      margin: const EdgeInsets.fromLTRB(30, 30, 30, 0),
-      elevation: 10, // z轴高度，即阴影大小
-      shadowColor: Colors.grey,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(8))), // 圆角
-      clipBehavior: Clip.antiAlias, // 设置抗锯齿，实现圆角背景
-      child: AspectRatio(
-        // 宽高比
-        aspectRatio: 2 / 1,
-        child: Stack(
-          children: [
-            // 纯色背景
-            // Container(
-            //   // color: Colors.blueGrey,
-            //   color: widget._bgColor[widget._roomId],
-            // ),
-            // 最底层是图片，外面嵌套ConstrainedBox，给Image加约束，让它填充父布局
-            ConstrainedBox(
-              child: Image.asset(
-                widget._bgUrl[widget._roomId],
-                fit: BoxFit.cover,
-              ),
-              constraints: const BoxConstraints.expand(),
-            ),
-            // Align的child若指定Row，则无法定位，而Positioned可以
-            Positioned(
-              left: 10,
-              top: 10,
-              child: Text(
-                "Room${widget._roomId}",
-                style: const TextStyle(
-                  fontSize: 30,
-                  color: Colors.white,
+    return MaterialButton(
+      focusColor: Colors.transparent,
+      onPressed: () {
+        // 按下按钮，触发路由跳转
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => Room(widget._roomId),
+          ),
+        );
+      },
+      child: Card(
+        // margin: const EdgeInsets.all(20),
+        margin: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+        elevation: 10, // z轴高度，即阴影大小
+        shadowColor: Colors.grey,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(8))), // 圆角
+        clipBehavior: Clip.antiAlias, // 设置抗锯齿，实现圆角背景
+        child: AspectRatio(
+          // 宽高比
+          aspectRatio: 2 / 1,
+          child: Stack(
+            children: [
+              // 纯色背景
+              // Container(
+              //   // color: Colors.blueGrey,
+              //   color: widget._bgColor[widget._roomId],
+              // ),
+              // 最底层是图片，外面嵌套ConstrainedBox，给Image加约束，让它填充父布局
+              ConstrainedBox(
+                child: Image.asset(
+                  widget._bgUrl[widget._roomId],
+                  fit: BoxFit.cover,
                 ),
+                constraints: const BoxConstraints.expand(),
               ),
-            ),
-            Positioned(
-              right: 10,
-              top: 10,
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.person_outline_sharp,
+              // Align的child若指定Row，则无法定位，而Positioned可以
+              Positioned(
+                left: 10,
+                top: 10,
+                child: Text(
+                  "自习室 ${widget._roomId}",
+                  style: const TextStyle(
+                    fontSize: 20,
                     color: Colors.white,
                   ),
-                  Text(
-                    "${widget._roomPeopleCnt}",
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
-            Positioned(
-              right: 10,
-              bottom: 10,
-              child: EnterBottom(widget._roomId),
-            ),
-          ],
+              Positioned(
+                right: 10,
+                // top: 10,
+                bottom: 10,
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.person_outline_sharp,
+                      color: Colors.white,
+                    ),
+                    Text(
+                      "${widget._roomPeopleCnt}",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Positioned(
+              //   right: 10,
+              //   bottom: 10,
+              //   child: EnterBottom(widget._roomId),
+              // ),
+            ],
+          ),
         ),
       ),
     );

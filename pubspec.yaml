@@ -71,6 +71,13 @@ flutter:
     - assets/images/bg6.png
     - assets/images/bg7.png
     - assets/images/bg8.png
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/Roboto-Regular.ttf
+    - family: times
+      fonts:
+        - asset: assets/fonts/times.ttf
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

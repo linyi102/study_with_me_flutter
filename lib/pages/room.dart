@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_demo/pages/tabs.dart';
+import 'package:flutter_application_demo/main.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/status.dart' as status;
 
@@ -16,8 +16,7 @@ class Room extends StatefulWidget {
 
 class _RoomState extends State<Room> {
   int roomPeopleCnt = 0;
-  var channel = IOWebSocketChannel.connect(
-      "ws://njtg5y.natappfree.cc/study_with_me/room_web_socket");
+  var channel = IOWebSocketChannel.connect(roomWebSocketUrl);
   @override
   void initState() {
     super.initState();
@@ -34,11 +33,12 @@ class _RoomState extends State<Room> {
   }
 
   Future<bool> _leaveRoom() {
-    Map info = {
-      "action": "leave",
-      "roomId": widget.roomId,
-    };
-    channel.sink.add(json.encode(info));
+    // Map info = {
+    //   "action": "leave",
+    //   "roomId": widget.roomId,
+    // };
+    // channel.sink.add(json.encode(info));
+    // 返回前需要手动关闭WebSocket
     channel.sink.close();
     Navigator.of(context).pop();
     return Future.value(true);
@@ -50,23 +50,22 @@ class _RoomState extends State<Room> {
       onWillPop: _leaveRoom,
       child: Scaffold(
         appBar: AppBar(
-          title: Text("自习室 " + widget.roomId.toString()), // 通过widget获取状态组件的成员变量
+          title: Text(
+            "自习室 " + widget.roomId.toString(),
+            style: const TextStyle(color: Colors.black),
+          ), // 通过widget获取状态组件的成员变量
           centerTitle: true,
+          shadowColor: Colors.transparent,
+          backgroundColor: Colors.white,
           automaticallyImplyLeading: false, // 隐藏自带的返回按钮
           leading: IconButton(
             onPressed: () {
-              Map info = {
-                "action": "leave",
-                "roomId": widget.roomId,
-              };
-              channel.sink.add(json.encode(info));
-              channel.sink.close();
-              Navigator.of(context).pop();
-              // Navigator.of(context).pushAndRemoveUntil(
-              //     MaterialPageRoute(builder: (context) => const Tabs()),
-              //     (route) => false);
+              _leaveRoom();
             },
-            icon: const Icon(Icons.arrow_back_ios_new_rounded),
+            icon: const Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: Colors.black,
+            ),
           ),
         ),
         body: Center(
@@ -87,21 +86,6 @@ class _RoomState extends State<Room> {
                   ),
                 ],
               ),
-              // ElevatedButton(
-              //   onPressed: () {
-              //     Map info = {
-              //       "action": "leave",
-              //       "roomId": widget.roomId,
-              //     };
-              //     channel.sink.add(json.encode(info));
-              //     channel.sink.close();
-              //     // Navigator.of(context).pop();
-              //     Navigator.of(context).pushAndRemoveUntil(
-              //         MaterialPageRoute(builder: (context) => const Tabs()),
-              //         (route) => false);
-              //   },
-              //   child: const Text("退出自习室"),
-              // ),
             ],
           ),
         ),

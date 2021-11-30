@@ -1,10 +1,11 @@
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart'; // fim: (f)lutter,(im)port
 import 'package:flutter/material.dart';
-import 'res/list_data.dart';
 import 'pages/tabs.dart';
 
-// import 'dart:ffi';
+const roomWebSocketUrl =
+    "ws://8.141.147.248:8080/study_with_me/room_web_socket";
+const indexWebSocketUrl =
+    "ws://8.141.147.248:8080/study_with_me/index_web_socket";
 
 void main() {
   // 顶部栏透明

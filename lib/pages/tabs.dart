@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_demo/pages/tabs/forum_page.dart';
 import 'package:flutter_application_demo/pages/tabs/home_page.dart';
 import 'package:flutter_application_demo/pages/tabs/setting_page.dart';
+import 'package:web_socket_channel/io.dart';
+
+import '../main.dart';
+
+IOWebSocketChannel channel = IOWebSocketChannel.connect(indexWebSocketUrl);
 
 // 15 Flutter BottomNavigationBar 自定义底部导航条、以及实现页面切换
 class Tabs extends StatefulWidget {
@@ -29,8 +34,18 @@ class _TabsState extends State<Tabs> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Study with me"),
+        title: const Text(
+          "Study With Me",
+          style: TextStyle(
+            color: Colors.black,
+            letterSpacing: 2,
+            // fontFamily: 'times',
+            // fontWeight: FontWeight.bold,
+          ),
+        ),
         centerTitle: true,
+        shadowColor: Colors.transparent,
+        backgroundColor: Colors.white,
       ),
       body: _pageList[_currentIndex],
       // 底部导航栏，根据选择的项动态改变dody里的内容，从而实现跳转页面
@@ -44,9 +59,9 @@ class _TabsState extends State<Tabs> {
           });
         },
         selectedItemColor: Colors.blue, // 选中某一项的颜色，或者用fixedColor
-        backgroundColor: const Color.fromRGBO(247, 247, 247, 1),
+        backgroundColor: const Color.fromRGBO(254, 254, 254, 1),
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: "主页"),
+          BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: "首页"),
           BottomNavigationBarItem(icon: Icon(Icons.forum_rounded), label: "论坛"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "我的"),
         ],
