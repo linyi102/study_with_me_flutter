@@ -6,7 +6,7 @@ import 'package:web_socket_channel/io.dart';
 
 import '../main.dart';
 
-IOWebSocketChannel channel = IOWebSocketChannel.connect(indexWebSocketUrl);
+IOWebSocketChannel indexChannel = IOWebSocketChannel.connect(indexWebSocketUrl);
 
 // 15 Flutter BottomNavigationBar 自定义底部导航条、以及实现页面切换
 class Tabs extends StatefulWidget {

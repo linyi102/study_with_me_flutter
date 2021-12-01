@@ -14,8 +14,8 @@ class _ForumPageState extends State<ForumPage> {
   @override
   void initState() {
     super.initState();
-    debugPrint("关闭WebSocket");
-    channel.sink.close();
+    debugPrint("forum_page：访问论坛，关闭indexChannel");
+    indexChannel.sink.close();
   }
 
   @override

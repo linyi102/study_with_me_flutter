@@ -36,54 +36,50 @@ class _HomePageState extends State<HomePage> {
     // for (int i = 1; i <= 4; ++i) {
     //   list.add(RoomItem(i, _allRoomPeopleCnt["room$i"]));
     // }
-    return RefreshIndicator(
-      onRefresh: _getAllRoomPeopleCnt,
-      // 一个列表
-      // 不知道为啥必须要放在ListView里才有刷新的样式
-      child: ListView(
-        children: [
-          RoomCard(1, _allRoomPeopleCnt["room1"]),
-          RoomCard(2, _allRoomPeopleCnt["room2"]),
-          RoomCard(3, _allRoomPeopleCnt["room3"]),
-          RoomCard(4, _allRoomPeopleCnt["room4"]),
-          // 旧样式
-          // Column(
-          //   children: [
-          //     SizedBox(
-          //       height: MediaQuery.of(context).size.height / 3,
-          //     ),
-          //     RoomItem(1, _allRoomPeopleCnt["room1"]),
-          //     RoomItem(2, _allRoomPeopleCnt["room2"]),
-          //     RoomItem(3, _allRoomPeopleCnt["room3"]),
-          //     RoomItem(4, _allRoomPeopleCnt["room4"]),
-          //   ],
-          // ),
-        ],
-      ),
+    return ListView(
+      children: [
+        RoomCard(1, _allRoomPeopleCnt["room1"]),
+        RoomCard(2, _allRoomPeopleCnt["room2"]),
+        RoomCard(3, _allRoomPeopleCnt["room3"]),
+        RoomCard(4, _allRoomPeopleCnt["room4"]),
+        // 旧样式
+        // Column(
+        //   children: [
+        //     SizedBox(
+        //       height: MediaQuery.of(context).size.height / 3,
+        //     ),
+        //     RoomItem(1, _allRoomPeopleCnt["room1"]),
+        //     RoomItem(2, _allRoomPeopleCnt["room2"]),
+        //     RoomItem(3, _allRoomPeopleCnt["room3"]),
+        //     RoomItem(4, _allRoomPeopleCnt["room4"]),
+        //   ],
+        // ),
+      ],
     );
   }
 
-  Future<void> _getAllRoomPeopleCnt() async {
-    // 刚点主页就获取人数，然后关闭，然后每次刷新执行一次
-    channel = IOWebSocketChannel.connect(indexWebSocketUrl);
-    // channel.sink.add("enter index page");
+  void _getAllRoomPeopleCnt() {
+    // 刚点主页就获取人数，然后关闭，然后每次刷新执行一次(刷新前需要先关闭然后打开)
+    // debugPrint("home_page：访问主页，关闭indexChannel");
+    indexChannel.sink.close();
+    debugPrint("home_page：访问主页，打开indexChannel");
+    indexChannel = IOWebSocketChannel.connect(indexWebSocketUrl);
     List list = [];
-    channel.stream.listen((event) {
+    indexChannel.stream.listen((event) {
       list = event.toString().split(" ");
       debugPrint("list: ${list.toString()}");
-
       Map map = {
         "room1": int.parse(list[1]),
         "room2": int.parse(list[2]),
         "room3": int.parse(list[3]),
         "room4": int.parse(list[4]),
       };
-      setState(() {
-        _allRoomPeopleCnt = map;
-      });
+      if (mounted) {
+        setState(() {
+          _allRoomPeopleCnt = map;
+        });
+      }
     });
-    // debugPrint("关闭WebSocket");
-    // channel.sink.close();
   }
 }
 
@@ -123,6 +119,8 @@ class _RoomCardState extends State<RoomCard> {
     return MaterialButton(
       focusColor: Colors.transparent,
       onPressed: () {
+        debugPrint("home_page：进入自习室，关闭indexChannel");
+        indexChannel.sink.close();
         // 按下按钮，触发路由跳转
         Navigator.of(context).push(
           MaterialPageRoute(

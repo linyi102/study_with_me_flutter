@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_demo/main.dart';
+import 'package:flutter_application_demo/pages/tabs.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/status.dart' as status;
 
@@ -16,16 +17,17 @@ class Room extends StatefulWidget {
 
 class _RoomState extends State<Room> {
   int roomPeopleCnt = 0;
-  var channel = IOWebSocketChannel.connect(roomWebSocketUrl);
+  var roomChannel = IOWebSocketChannel.connect(roomWebSocketUrl);
   @override
   void initState() {
+    debugPrint("room：访问自习室，打开roomChannel");
     super.initState();
     Map info = {
       "action": "enter",
       "roomId": widget.roomId,
     };
-    channel.sink.add(json.encode(info));
-    channel.stream.listen((event) {
+    roomChannel.sink.add(json.encode(info));
+    roomChannel.stream.listen((event) {
       setState(() {
         roomPeopleCnt = int.parse(event);
       });
@@ -33,13 +35,10 @@ class _RoomState extends State<Room> {
   }
 
   Future<bool> _leaveRoom() {
-    // Map info = {
-    //   "action": "leave",
-    //   "roomId": widget.roomId,
-    // };
-    // channel.sink.add(json.encode(info));
     // 返回前需要手动关闭WebSocket
-    channel.sink.close();
+    debugPrint("room：离开自习室，关闭roomChannel，同时打开indexChannel");
+    roomChannel.sink.close();
+    indexChannel = IOWebSocketChannel.connect(indexWebSocketUrl);
     Navigator.of(context).pop();
     return Future.value(true);
   }

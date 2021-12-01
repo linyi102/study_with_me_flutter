@@ -14,8 +14,8 @@ class _SettingState extends State<SettingPage> {
   @override
   void initState() {
     super.initState();
-    debugPrint("关闭WebSocket");
-    channel.sink.close();
+    debugPrint("setting_page：访问我的，关闭indexChannel");
+    indexChannel.sink.close();
   }
 
   @override
