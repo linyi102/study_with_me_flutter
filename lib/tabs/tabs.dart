@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_demo/pages/tabs/forum_page.dart';
-import 'package:flutter_application_demo/pages/tabs/home_page.dart';
-import 'package:flutter_application_demo/pages/tabs/setting_page.dart';
+import 'package:flutter_application_demo/tabs/forum_page.dart';
+import 'package:flutter_application_demo/tabs/home_page.dart';
+import 'package:flutter_application_demo/tabs/setting_page.dart';
 import 'package:web_socket_channel/io.dart';
 
 import '../main.dart';

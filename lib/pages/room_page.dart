@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:custom_timer/custom_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_demo/main.dart';
-import 'package:flutter_application_demo/pages/tabs.dart';
 import 'package:web_socket_channel/io.dart';
 
 class Room extends StatefulWidget {
@@ -18,12 +17,11 @@ class Room extends StatefulWidget {
 class _RoomState extends State<Room> {
   int roomPeopleCnt = 0;
   var roomChannel = IOWebSocketChannel.connect(roomWebSocketUrl);
-  @override
-  final CustomTimerController _controller = CustomTimerController();
+  final CustomTimerController _timeController = CustomTimerController();
 
   @override
   void initState() {
-    debugPrint("room_page：访问自习室${widget.roomId}，打开roomChannel");
+    debugPrint("room_page：访问自习室${widget.roomId}，连接并监听roomChannel");
     super.initState();
     Map info = {
       "action": "enter",
@@ -37,14 +35,12 @@ class _RoomState extends State<Room> {
     });
   }
 
-  Future<bool> _leaveRoom() {
+  Future<bool> _leaveRoom() async {
     // 返回前需要手动关闭WebSocket
-    debugPrint(
-        "room_page：离开自习室${widget.roomId}，关闭roomChannel，同时打开indexChannel");
+    debugPrint("room_page：离开自习室${widget.roomId}，关闭roomChannel");
     roomChannel.sink.close();
-    indexChannel = IOWebSocketChannel.connect(indexWebSocketUrl);
     Navigator.of(context).pop();
-    return Future.value(true);
+    return true;
   }
 
   @override
@@ -106,7 +102,7 @@ class _RoomState extends State<Room> {
               children: [
                 Expanded(child: Container()),
                 CustomTimer(
-                    controller: _controller,
+                    controller: _timeController,
                     begin: const Duration(days: 0),
                     end: const Duration(days: 1),
                     builder: (time) {
@@ -120,14 +116,14 @@ class _RoomState extends State<Room> {
                     }),
                 IconButton(
                   onPressed: () {
-                    if (_controller.state == CustomTimerState.counting) {
-                      _controller.pause();
+                    if (_timeController.state == CustomTimerState.counting) {
+                      _timeController.pause();
                     } else {
-                      _controller.start();
+                      _timeController.start();
                     }
                     setState(() {});
                   },
-                  icon: _controller.state == CustomTimerState.counting
+                  icon: _timeController.state == CustomTimerState.counting
                       ? const Icon(Icons.pause)
                       : const Icon(Icons.play_arrow),
                 ),

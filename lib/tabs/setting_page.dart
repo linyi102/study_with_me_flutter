@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_demo/tabs/tabs.dart';
 import 'package:flutter_application_demo/pages/under_construction_page.dart';
 
-import '../tabs.dart';
-
-class ForumPage extends StatefulWidget {
-  const ForumPage({Key? key}) : super(key: key);
+class SettingPage extends StatefulWidget {
+  const SettingPage({Key? key}) : super(key: key);
 
   @override
-  _ForumPageState createState() => _ForumPageState();
+  _SettingState createState() => _SettingState();
 }
 
-class _ForumPageState extends State<ForumPage> {
+class _SettingState extends State<SettingPage> {
   @override
   void initState() {
     super.initState();
-    debugPrint("forum_page：访问论坛，关闭indexChannel");
+    debugPrint("setting_page：访问我的，关闭indexChannel");
     indexChannel.sink.close();
   }
 

@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart'; // fim: (f)lutter,(im)port
 import 'package:flutter/material.dart';
-import 'pages/tabs.dart';
+import 'tabs/tabs.dart';
 
 const roomWebSocketUrl =
     "ws://8.141.147.248:8080/study_with_me/room_web_socket";

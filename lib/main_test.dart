@@ -1,8 +1,7 @@
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart'; // fim: (f)lutter,(im)port
 import 'package:flutter/material.dart';
 import 'res/list_data.dart';
-import 'pages/tabs.dart';
+import 'tabs/tabs.dart';
 
 // import 'dart:ffi';
 
@@ -170,7 +169,7 @@ class HomeContentP25 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
+      children: const [
         Expanded(
           child: IconContainer(
             Icons.ac_unit,
