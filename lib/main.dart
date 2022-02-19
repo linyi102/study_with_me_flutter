@@ -27,7 +27,14 @@ class MyApp extends StatelessWidget {
       // scaffold(脚手架)，通过脚手架实现home
       home: const Tabs(),
       theme: ThemeData(
-          primarySwatch: Colors.blue, scaffoldBackgroundColor: Colors.white),
+        primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: Colors.white,
+        pageTransitionsTheme: const PageTransitionsTheme(
+          builders: <TargetPlatform, PageTransitionsBuilder>{
+            TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+          },
+        ),
+      ),
     );
   }
 }

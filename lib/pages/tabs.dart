@@ -45,27 +45,30 @@ class _TabsState extends State<Tabs> {
         ),
         centerTitle: true,
         shadowColor: Colors.transparent,
+        elevation: 0,
+        // elevation: 1,
         backgroundColor: Colors.white,
       ),
-      body: _pageList[_currentIndex],
-      // 底部导航栏，根据选择的项动态改变dody里的内容，从而实现跳转页面
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        // 当单击某个底部导航栏的某一项时，会传入该项的索引到onTap中
-        onTap: (int index) {
-          setState(() {
-            // 改变状态，所有用到了_currentIndex的组件都会重新加载，如body和currentIndex
-            _currentIndex = index;
-          });
-        },
-        selectedItemColor: Colors.blue, // 选中某一项的颜色，或者用fixedColor
-        backgroundColor: const Color.fromRGBO(254, 254, 254, 1),
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: "首页"),
-          BottomNavigationBarItem(icon: Icon(Icons.forum_rounded), label: "论坛"),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "我的"),
-        ],
-      ),
+      body: const HomePage(),
+      // body: _pageList[_currentIndex],
+      // // 底部导航栏，根据选择的项动态改变dody里的内容，从而实现跳转页面
+      // bottomNavigationBar: BottomNavigationBar(
+      //   currentIndex: _currentIndex,
+      //   // 当单击某个底部导航栏的某一项时，会传入该项的索引到onTap中
+      //   onTap: (int index) {
+      //     setState(() {
+      //       // 改变状态，所有用到了_currentIndex的组件都会重新加载，如body和currentIndex
+      //       _currentIndex = index;
+      //     });
+      //   },
+      //   selectedItemColor: Colors.blue, // 选中某一项的颜色，或者用fixedColor
+      //   backgroundColor: const Color.fromRGBO(254, 254, 254, 1),
+      //   items: const [
+      //     BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: "首页"),
+      //     BottomNavigationBarItem(icon: Icon(Icons.forum_rounded), label: "论坛"),
+      //     BottomNavigationBarItem(icon: Icon(Icons.person), label: "我的"),
+      //   ],
+      // ),
     );
   }
 }

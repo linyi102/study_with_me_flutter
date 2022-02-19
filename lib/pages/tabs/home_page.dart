@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_demo/components/fade_route.dart';
 import 'package:flutter_application_demo/main.dart';
-import 'package:flutter_application_demo/pages/room.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter_application_demo/pages/room_page.dart';
+import 'package:flutter_application_demo/pages/tabs.dart';
 import 'package:web_socket_channel/io.dart';
-import 'package:web_socket_channel/status.dart' as status;
-
-import '../tabs.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -74,11 +72,10 @@ class _HomePageState extends State<HomePage> {
         "room3": int.parse(list[3]),
         "room4": int.parse(list[4]),
       };
-      if (mounted) {
-        setState(() {
-          _allRoomPeopleCnt = map;
-        });
-      }
+      // if (mounted) { // 删除刷新组件就不需要这个了
+      setState(() {
+        _allRoomPeopleCnt = map;
+      });
     });
   }
 }
@@ -116,83 +113,84 @@ class RoomCard extends StatefulWidget {
 class _RoomCardState extends State<RoomCard> {
   @override
   Widget build(BuildContext context) {
-    return MaterialButton(
-      focusColor: Colors.transparent,
-      onPressed: () {
-        debugPrint("home_page：进入自习室，关闭indexChannel");
-        indexChannel.sink.close();
-        // 按下按钮，触发路由跳转
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => Room(widget._roomId),
-          ),
-        );
-      },
-      child: Card(
-        // margin: const EdgeInsets.all(20),
-        margin: const EdgeInsets.fromLTRB(20, 15, 20, 15),
-        elevation: 10, // z轴高度，即阴影大小
-        shadowColor: Colors.grey,
-        shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(8))), // 圆角
-        clipBehavior: Clip.antiAlias, // 设置抗锯齿，实现圆角背景
-        child: AspectRatio(
-          // 宽高比
-          aspectRatio: 2 / 1,
-          child: Stack(
-            children: [
-              // 纯色背景
-              // Container(
-              //   // color: Colors.blueGrey,
-              //   color: widget._bgColor[widget._roomId],
-              // ),
-              // 最底层是图片，外面嵌套ConstrainedBox，给Image加约束，让它填充父布局
-              ConstrainedBox(
+    return Card(
+      // margin: const EdgeInsets.all(20),
+      margin: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+      elevation: 10, // z轴高度，即阴影大小
+      shadowColor: Colors.grey,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(8))), // 圆角
+      clipBehavior: Clip.antiAlias, // 设置抗锯齿，实现圆角背景
+      child: AspectRatio(
+        // 宽高比
+        aspectRatio: 16 / 7,
+        child: Stack(
+          children: [
+            // 纯色背景
+            // Container(
+            //   // color: Colors.blueGrey,
+            //   color: widget._bgColor[widget._roomId],
+            // ),
+            // 最底层是图片，外面嵌套ConstrainedBox，给Image加约束，让它填充父布局
+            MaterialButton(
+              padding: const EdgeInsets.all(0),
+              focusColor: Colors.transparent,
+              onPressed: () {
+                debugPrint("home_page：进入自习室${widget._roomId}，关闭indexChannel");
+                indexChannel.sink.close();
+                // 按下按钮，触发路由跳转
+                Navigator.of(context).push(
+                  FadeRoute(builder: (context) {
+                    return Room(widget._roomId);
+                  }),
+                );
+              },
+              child: ConstrainedBox(
                 child: Image.asset(
                   widget._bgUrl[widget._roomId],
                   fit: BoxFit.cover,
                 ),
                 constraints: const BoxConstraints.expand(),
               ),
-              // Align的child若指定Row，则无法定位，而Positioned可以
-              Positioned(
-                left: 10,
-                top: 10,
-                child: Text(
-                  "自习室 ${widget._roomId}",
-                  style: const TextStyle(
-                    fontSize: 20,
+            ),
+            // Align的child若指定Row，则无法定位，而Positioned可以
+            Positioned(
+              left: 10,
+              top: 10,
+              child: Text(
+                "自习室 ${widget._roomId}",
+                style: const TextStyle(
+                  fontSize: 20,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            Positioned(
+              right: 10,
+              // top: 10,
+              bottom: 10,
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.person_outline_sharp,
                     color: Colors.white,
                   ),
-                ),
-              ),
-              Positioned(
-                right: 10,
-                // top: 10,
-                bottom: 10,
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.person_outline_sharp,
+                  Text(
+                    "${widget._roomPeopleCnt}",
+                    style: const TextStyle(
                       color: Colors.white,
+                      fontWeight: FontWeight.bold,
                     ),
-                    Text(
-                      "${widget._roomPeopleCnt}",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              // Positioned(
-              //   right: 10,
-              //   bottom: 10,
-              //   child: EnterBottom(widget._roomId),
-              // ),
-            ],
-          ),
+            ),
+            // Positioned(
+            //   right: 10,
+            //   bottom: 10,
+            //   child: EnterBottom(widget._roomId),
+            // ),
+          ],
         ),
       ),
     );
@@ -247,9 +245,9 @@ class _EnterBottomState extends State<EnterBottom> {
       onPressed: () {
         // 按下按钮，触发路由跳转
         Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => Room(widget.roomId),
-          ),
+          FadeRoute(builder: (context) {
+            return Room(widget.roomId);
+          }),
         );
       },
       child: const Text("进入"),
