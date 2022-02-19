@@ -23,6 +23,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // 推荐MaterialApp作为根组件
     return MaterialApp(
+      title: "Study With Me",
       debugShowCheckedModeBanner: false,
       // scaffold(脚手架)，通过脚手架实现home
       home: const Tabs(),
