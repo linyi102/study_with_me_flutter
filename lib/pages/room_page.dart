@@ -48,88 +48,139 @@ class _RoomState extends State<Room> {
     return WillPopScope(
       onWillPop: _leaveRoom,
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            "自习室 " + widget.roomId.toString(),
-            style: const TextStyle(color: Colors.black),
-          ), // 通过widget获取状态组件的成员变量
-          centerTitle: true,
-          shadowColor: Colors.transparent,
-          elevation: 0,
-          backgroundColor: Colors.white,
-          automaticallyImplyLeading: false, // 隐藏自带的返回按钮
-          leading: IconButton(
-            onPressed: () {
-              _leaveRoom();
-            },
-            icon: const Icon(
-              Icons.arrow_back_ios_new_rounded,
-              color: Colors.black,
-            ),
-          ),
-        ),
+        // appBar: AppBar(
+        //   title: Text(
+        //     "自习室 " + widget.roomId.toString(),
+        //     style: const TextStyle(color: Colors.black),
+        //   ), // 通过widget获取状态组件的成员变量
+        //   centerTitle: true,
+        //   shadowColor: Colors.transparent,
+        //   elevation: 0,
+        //   backgroundColor: Colors.white,
+        //   automaticallyImplyLeading: false, // 隐藏自带的返回按钮
+        //   leading: IconButton(
+        //     onPressed: () {
+        //       _leaveRoom();
+        //     },
+        //     icon: const Icon(
+        //       Icons.arrow_back_ios_new_rounded,
+        //       color: Colors.black,
+        //     ),
+        //   ),
+        // ),
         body: Stack(
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(0, 25, 80, 0),
-              child: Transform.scale(
-                scale: 1.2,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    const Icon(
-                      Icons.person_outline_sharp,
-                    ),
-                    Text(
-                      "$roomPeopleCnt",
-                    ),
-                  ],
+            ConstrainedBox(
+              child: Image.asset(
+                "assets/images/bgRoom.png",
+                fit: BoxFit.cover,
+              ),
+              constraints: const BoxConstraints.expand(),
+            ),
+            Positioned(
+              top: 30,
+              left: 10,
+              child: IconButton(
+                onPressed: () {
+                  _leaveRoom();
+                },
+                icon: const Icon(
+                  Icons.arrow_back_ios,
+                  // Icons.arrow_back,
+                  color: Colors.black87,
+                  // size: 30,
                 ),
               ),
             ),
-            // Container(
-            //   width: 200,
-            //   height: 200,
-            //   decoration: BoxDecoration(
-            //     color: Colors.blue,
-            //     borderRadius: BorderRadius.circular(200),
-            //   ),
-            //   child: Stack(
-            //     children: [],
-            //   ),
-            // ),
             Column(
               children: [
                 Expanded(child: Container()),
-                CustomTimer(
-                    controller: _timeController,
-                    begin: const Duration(days: 0),
-                    end: const Duration(days: 1),
-                    builder: (time) {
-                      return Text(
-                          "${time.hours}:${time.minutes}:${time.seconds}",
-                          style: const TextStyle(fontSize: 24.0));
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "自习室 " + widget.roomId.toString(),
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 20,
+                        fontFamily: "Chalk-JP",
+                      ),
+                    ),
+                    // const Icon(
+                    //   Icons.person_outline_sharp,
+                    //   color: Colors.white70,
+                    // ),
+                    const Text("            "),
+                    Text(
+                      "当前人数：$roomPeopleCnt",
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 20,
+                        fontFamily: "Chalk-JP",
+                      ),
+                    ),
+                  ],
+                ),
+                // Text(
+                //   "自习室 " + widget.roomId.toString(),
+                //   style: const TextStyle(
+                //     color: Colors.white70,
+                //     fontSize: 20,
+                //     fontFamily: "Chalk-JP",
+                //   ),
+                // ),
+                const SizedBox(
+                  height: 40,
+                ),
+                Transform.scale(
+                  scale: 1.5,
+                  child: CustomTimer(
+                      controller: _timeController,
+                      begin: const Duration(days: 0),
+                      end: const Duration(days: 1),
+                      builder: (time) {
+                        return Text(
+                            "${time.hours}:${time.minutes}:${time.seconds}",
+                            style: const TextStyle(
+                              fontSize: 24.0,
+                              color: Colors.white70,
+                              fontFamily: "Chalk-JP",
+                            ));
+                      },
+                      onChangeState: (state) {
+                        // This callback function runs when the timer state changes.
+                        debugPrint("Current state: $state");
+                      }),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Transform.scale(
+                  scale: 1.5,
+                  child: IconButton(
+                    onPressed: () {
+                      if (_timeController.state == CustomTimerState.counting) {
+                        _timeController.pause();
+                      } else {
+                        _timeController.start();
+                      }
+                      setState(() {});
                     },
-                    onChangeState: (state) {
-                      // This callback function runs when the timer state changes.
-                      debugPrint("Current state: $state");
-                    }),
-                IconButton(
-                  onPressed: () {
-                    if (_timeController.state == CustomTimerState.counting) {
-                      _timeController.pause();
-                    } else {
-                      _timeController.start();
-                    }
-                    setState(() {});
-                  },
-                  icon: _timeController.state == CustomTimerState.counting
-                      ? const Icon(Icons.pause)
-                      : const Icon(Icons.play_arrow),
+                    icon: _timeController.state == CustomTimerState.counting
+                        ? const Icon(Icons.pause_circle_filled_rounded,
+                            color: Colors.white70)
+                        : const Icon(
+                            Icons.play_circle_fill_rounded,
+                            color: Colors.white70,
+                          ),
+                  ),
                 ),
                 Expanded(child: Container()),
+                const SizedBox(
+                  height: 180,
+                ),
               ],
-            )
+            ),
           ],
         ),
       ),

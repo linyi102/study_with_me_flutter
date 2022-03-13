@@ -19,6 +19,14 @@ class _ForumPageState extends State<ForumPage> {
 
   @override
   Widget build(BuildContext context) {
-    return const UnderConstructionPage();
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            "论坛",
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          ),
+          centerTitle: true,
+        ),
+        body: const UnderConstructionPage());
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart'; // fim: (f)lutter,(im)port
 import 'package:flutter/material.dart';
-import 'tabs/tabs.dart';
+import 'package:flutter_application_demo/tabs/loading_page.dart';
 
 const roomWebSocketUrl =
     "ws://8.141.147.248:8080/study_with_me/room_web_socket";
@@ -26,7 +26,8 @@ class MyApp extends StatelessWidget {
       title: "Study With Me",
       debugShowCheckedModeBanner: false,
       // scaffold(脚手架)，通过脚手架实现home
-      home: const Tabs(),
+      // home: const Tabs(),
+      home: const LoadingPage(),
       theme: ThemeData(
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: Colors.white,
@@ -34,6 +35,15 @@ class MyApp extends StatelessWidget {
           builders: <TargetPlatform, PageTransitionsBuilder>{
             TargetPlatform.android: CupertinoPageTransitionsBuilder(),
           },
+        ),
+        appBarTheme: const AppBarTheme(
+          // 统一设置AppBar主题
+          shadowColor: Colors.transparent,
+          elevation: 0,
+          backgroundColor: Colors.white,
+          iconTheme: IconThemeData(
+            color: Colors.black,
+          ),
         ),
       ),
     );

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_demo/components/fade_route.dart';
 import 'package:flutter_application_demo/main.dart';
 import 'package:flutter_application_demo/pages/room_page.dart';
 import 'package:flutter_application_demo/tabs/tabs.dart';
@@ -29,8 +28,17 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: _displayRoomCards(),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "首页",
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+      ),
+      body: ListView(
+        children: _displayRoomCards(),
+      ),
     );
   }
 
@@ -110,9 +118,12 @@ class _HomePageState extends State<HomePage> {
                   indexChannel.sink.close();
                   // 按下按钮，触发路由跳转
                   Navigator.of(context).push(
-                    FadeRoute(builder: (context) {
+                    MaterialPageRoute(builder: (context) {
                       return Room(roomId);
                     }),
+                    // FadeRoute(builder: (context) {
+                    //   return Room(roomId);
+                    // }),
                   ).then((value) {
                     debugPrint("home_page：从自习室返回主页");
                     _listenIndexChannel();
