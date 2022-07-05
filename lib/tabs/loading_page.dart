@@ -18,7 +18,7 @@ class _LoadingPageState extends State<LoadingPage> {
           context,
           FadeRoute(
               builder: (context) => const Tabs(),
-              transitionDuration: const Duration(seconds: 1)),
+              transitionDuration: const Duration(milliseconds: 500)),
           (route) => false);
     });
   }

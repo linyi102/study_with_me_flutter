@@ -49,19 +49,16 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _listenIndexChannel() {
-    indexChannel.sink.close();
     debugPrint("home_page：连接并监听indexChannel");
     indexChannel = IOWebSocketChannel.connect(indexWebSocketUrl);
     List list = [];
     indexChannel.stream.listen((event) {
       list = event.toString().split(" ");
       debugPrint("list: ${list.toString()}");
-      Map map = {
-        "room1": int.parse(list[1]),
-        "room2": int.parse(list[2]),
-        "room3": int.parse(list[3]),
-        "room4": int.parse(list[4]),
-      };
+      Map map = {};
+      for (int roomId = 1; roomId <= 4; ++roomId) {
+        map["room$roomId"] = int.parse(list[roomId]);
+      }
       modifyAllRoomPeopleCnt(map);
     });
   }
